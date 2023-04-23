@@ -1,0 +1,1 @@
+Repository with code samples for [SR Linux JSON RPC library](https://github.com/azyablov/srljrpc).
