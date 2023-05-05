@@ -11,7 +11,7 @@ import (
 var (
 	host = "clab-evpn-leaf1"
 	user = "admin"
-	pass = "admin"
+	pass = "NokiaSrl1!"
 	port = 443
 )
 
