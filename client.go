@@ -28,6 +28,7 @@ func main() {
 	fmt.Printf("Target hostname: %s\nTarget system version: %s\n", c.GetHostname(), c.GetSysVer())
 
 	// GET method example.
+	fmt.Println(strings.Repeat("=", 80))
 	fmt.Println("c.Get() example:")
 	fmt.Println(strings.Repeat("=", 80))
 
@@ -52,6 +53,7 @@ func main() {
 	outHelper(stateResp.Result)
 
 	// Updating/Replacing/Deleting config
+	fmt.Println(strings.Repeat("=", 80))
 	fmt.Println("c.Update()/Delete()/Replace() example:")
 	fmt.Println(strings.Repeat("=", 80))
 
@@ -86,6 +88,7 @@ func main() {
 	outHelper(mdmResp.Result)
 
 	// CLI with different formats: JSON and TABLE.
+	fmt.Println(strings.Repeat("=", 80))
 	fmt.Println("c.CLI() example:")
 	fmt.Println(strings.Repeat("=", 80))
 	cliResp, err := c.CLI([]string{"show version", "show network-instance summary"}, formats.JSON)
@@ -108,6 +111,7 @@ func main() {
 	fmt.Printf("%s\n", t[0])
 
 	// Tools usage example to clear interface counters.
+	fmt.Println(strings.Repeat("=", 80))
 	fmt.Println("c.Tools() example:")
 	fmt.Println(strings.Repeat("=", 80))
 	toolsResp, err := c.Tools(srljrpc.PV{
@@ -121,6 +125,7 @@ func main() {
 	// Then for the sake of example we will use DIFF method with Bulk update: TestBulkDiffCandidate.
 	// DiffCandidate method is more simple and intended to use in cases you require only one action out of three: UPDATE, DELETE, REPLACE.
 	// That's essentially Bulk update with different operations: UPDATE, DELETE, REPLACE, while using yang-models of OpenConfig.
+	fmt.Println(strings.Repeat("=", 80))
 	fmt.Println("c.TestBulkDiffCandidate() example with error:")
 	fmt.Println(strings.Repeat("=", 80))
 
@@ -153,6 +158,7 @@ func main() {
 		outHelper(bulkDiffResp.Result)
 	}
 
+	fmt.Println(strings.Repeat("=", 80))
 	fmt.Println("c.TestBulkDiffCandidate() example with error:")
 	fmt.Println(strings.Repeat("=", 80))
 
@@ -167,7 +173,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Target hostname: %s\nTarget system version: %s\n", c.GetHostname(), c.GetSysVer())
 
 	bulkDiffResp, err = cOC.BulkDiffCandidate(pvs[0:1], pvs[1:2], pvs[2:], yms.OC)
 	if err != nil {
@@ -189,6 +194,9 @@ func main() {
 		outHelper(bulkDiffResp.Result)
 	}
 
+	fmt.Println(strings.Repeat("=", 80))
+	fmt.Println("c.TestBulkDiffCandidate() example w/o error:")
+	fmt.Println(strings.Repeat("=", 80))
 	// Adding changes into PV pairs to fix our artificial error and do things right ))
 	pvs = []srljrpc.PV{
 		{Path: `/system/config/login-banner`, Value: "DELETE"},
