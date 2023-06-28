@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/azyablov/srljrpc"
 	"github.com/azyablov/srljrpc/apierr"
@@ -29,7 +30,7 @@ func main() {
 
 	// GET method example.
 	fmt.Println(strings.Repeat("=", 80))
-	fmt.Println("c.Get() example:")
+	fmt.Println("Get() example:")
 	fmt.Println(strings.Repeat("=", 80))
 
 	getResp, err := c.Get(`/network-instance[name="MAC-VRF 1"]`, `/system/lldp`)
@@ -43,7 +44,7 @@ func main() {
 	fmt.Printf("Response: %s\n", string(rStr))
 
 	// Getting stats.
-	fmt.Println("c.State() example:")
+	fmt.Println("State() example:")
 	fmt.Println(strings.Repeat("=", 80))
 
 	stateResp, err := c.State("/system/json-rpc-server")
@@ -54,7 +55,7 @@ func main() {
 
 	// Updating/Replacing/Deleting config
 	fmt.Println(strings.Repeat("=", 80))
-	fmt.Println("c.Update()/Delete()/Replace() example:")
+	fmt.Println("Update()/Delete()/Replace() example:")
 	fmt.Println(strings.Repeat("=", 80))
 
 	pvs := []srljrpc.PV{
@@ -71,17 +72,17 @@ func main() {
 		outHelper(getResp.Result)
 	}
 
-	mdmResp, err := c.Update(pvs[0])
+	mdmResp, err := c.Update(0, pvs[0]) // setting 0 as confirmation timeout to apply changes immediately.
 	if err != nil {
 		panic(err)
 	}
 	outHelper(mdmResp.Result)
-	mdmResp, err = c.Delete(pvs[1].Path)
+	mdmResp, err = c.Delete(0, pvs[1].Path) // setting 0 as confirmation timeout to apply changes immediately.
 	if err != nil {
 		panic(err)
 	}
 	outHelper(mdmResp.Result)
-	mdmResp, err = c.Replace(pvs[2])
+	mdmResp, err = c.Replace(0, pvs[2]) // setting 0 as confirmation timeout to apply changes immediately.
 	if err != nil {
 		panic(err)
 	}
@@ -89,7 +90,7 @@ func main() {
 
 	// CLI with different formats: JSON and TABLE.
 	fmt.Println(strings.Repeat("=", 80))
-	fmt.Println("c.CLI() example:")
+	fmt.Println("CLI() example:")
 	fmt.Println(strings.Repeat("=", 80))
 	cliResp, err := c.CLI([]string{"show version", "show network-instance summary"}, formats.JSON)
 	if err != nil {
@@ -112,7 +113,7 @@ func main() {
 
 	// Tools usage example to clear interface counters.
 	fmt.Println(strings.Repeat("=", 80))
-	fmt.Println("c.Tools() example:")
+	fmt.Println("Tools() example:")
 	fmt.Println(strings.Repeat("=", 80))
 	toolsResp, err := c.Tools(srljrpc.PV{
 		Path:  "/interface[name=ethernet-1/1]/ethernet/statistics/clear",
@@ -126,7 +127,7 @@ func main() {
 	// DiffCandidate method is more simple and intended to use in cases you require only one action out of three: UPDATE, DELETE, REPLACE.
 	// That's essentially Bulk update with different operations: UPDATE, DELETE, REPLACE, while using yang-models of OpenConfig.
 	fmt.Println(strings.Repeat("=", 80))
-	fmt.Println("c.TestBulkDiffCandidate() example with error:")
+	fmt.Println("BulkDiff() example with error:")
 	fmt.Println(strings.Repeat("=", 80))
 
 	pvs = []srljrpc.PV{
@@ -134,7 +135,7 @@ func main() {
 		{Path: `/interfaces/interface[name=mgmt0]/config/description`, Value: "REPLACE"},
 		{Path: `/interfaces/interface[name=ethernet-1/11]/subinterfaces/subinterface[index=0]/config/description`, Value: "UPDATE"},
 	}
-	bulkDiffResp, err := c.BulkDiffCandidate(pvs[0:1], pvs[1:2], pvs[2:], yms.OC)
+	bulkDiffResp, err := c.BulkDiff(pvs[0:1], pvs[1:2], pvs[2:], yms.OC)
 	if err != nil {
 		if cerr, ok := err.(apierr.ClientError); ok {
 			fmt.Printf("ClientError error: %s\n", cerr) // ClientError
@@ -159,7 +160,7 @@ func main() {
 	}
 
 	fmt.Println(strings.Repeat("=", 80))
-	fmt.Println("c.TestBulkDiffCandidate() example with error:")
+	fmt.Println("BulkDiff() example with error:")
 	fmt.Println(strings.Repeat("=", 80))
 
 	pvs = []srljrpc.PV{
@@ -174,7 +175,7 @@ func main() {
 		panic(err)
 	}
 
-	bulkDiffResp, err = cOC.BulkDiffCandidate(pvs[0:1], pvs[1:2], pvs[2:], yms.OC)
+	bulkDiffResp, err = cOC.BulkDiff(pvs[0:1], pvs[1:2], pvs[2:], yms.OC)
 	if err != nil {
 		// Unwrapping error to investigate a root cause.
 		if cerr, ok := err.(apierr.ClientError); ok {
@@ -195,7 +196,7 @@ func main() {
 	}
 
 	fmt.Println(strings.Repeat("=", 80))
-	fmt.Println("c.TestBulkDiffCandidate() example w/o error:")
+	fmt.Println("BulkDiff() example w/o error:")
 	fmt.Println(strings.Repeat("=", 80))
 	// Adding changes into PV pairs to fix our artificial error and do things right ))
 	pvs = []srljrpc.PV{
@@ -204,7 +205,7 @@ func main() {
 		{Path: `/interfaces/interface[name=ethernet-1/11]/subinterfaces/subinterface[index=0]/config/description`, Value: "UPDATE"},
 	}
 
-	bulkDiffResp, err = cOC.BulkDiffCandidate(pvs[0:1], pvs[1:2], pvs[2:], yms.OC)
+	bulkDiffResp, err = cOC.BulkDiff(pvs[0:1], pvs[1:2], pvs[2:], yms.OC)
 	if err != nil {
 		outHelper(bulkDiffResp)
 		panic(err)
@@ -218,6 +219,68 @@ func main() {
 	message := data[0].(string)
 	fmt.Println(message)
 
+	fmt.Println(strings.Repeat("=", 80))
+	fmt.Println("BulkSetCallBack() with cancellation:")
+	fmt.Println(strings.Repeat("=", 80))
+	empty := []srljrpc.PV{}
+	sysInfPath := "/interface[name=system0]/description"
+	initVal := []srljrpc.PV{{Path: sysInfPath, Value: srljrpc.CommandValue("INITIAL")}}
+
+	_, err = c.Update(0, initVal[0]) // should be no error and system0 interface description should be set to "INITIAL".
+	if err != nil {
+		panic(err)
+	}
+
+	getResp, err = c.Get(sysInfPath)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Get() against %s before BulkSetCallBack():\n", sysInfPath)
+	fmt.Println(strings.Repeat("=", 80))
+	outHelper(getResp.Result)
+
+	chResp := make(chan *srljrpc.Response) // Channel for response.
+	chErr := make(chan error)              // Channel for error.
+	go func() {
+		newValueToConfirm := []srljrpc.PV{{Path: sysInfPath, Value: srljrpc.CommandValue("System Loopback")}}
+		// setting confirmation timeout to 30 seconds to allow comfortable time to verify changes. Setting 27 seconds as time to exec call back function.
+		// confirmCallBack is a function to be called after confirmation timeout is expired to confirm or cancel changes as per logic of the implementation.
+		resp, err := c.BulkSetCallBack(empty, empty, newValueToConfirm, yms.SRL, 8, 5, confirmCallBack)
+
+		// sending response and error to channels back to main thread.
+		chResp <- resp
+		chErr <- err
+	}()
+	// Meanwhile we can do something else in main thread.
+	// For example, we can get current value of the interface.
+	time.Sleep(2 * time.Second) // Allow 3 seconds to apply changes.
+	getResp, err = c.Get(sysInfPath)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Get() against %s:\n", sysInfPath)
+	fmt.Println(strings.Repeat("=", 80))
+	outHelper(getResp.Result)
+
+	// Waiting for response and error from channel.
+	resp := <-chResp
+	err = <-chErr
+	if err != nil {
+		panic(err)
+	}
+	// We expect response to be nil, as we set confirmation timeout to 30 seconds and call back function to 27 seconds.
+	if resp != nil {
+		fmt.Println("Unexpected response. Expected nil.")
+		outHelper(resp) // Unexpected outcome.
+	}
+	time.Sleep(30 * time.Second) // Allow enough time to rollback changes.
+	getResp, err = c.Get(sysInfPath)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Get() against %s after confirmation timeout expired:\n", sysInfPath)
+	fmt.Println(strings.Repeat("=", 80))
+	outHelper(getResp.Result)
 }
 
 func outHelper(v any) {
@@ -227,4 +290,15 @@ func outHelper(v any) {
 	}
 	fmt.Printf("%s\n", string(rStr))
 	fmt.Println(strings.Repeat("=", 80))
+}
+
+func confirmCallBack(req *srljrpc.Request, resp *srljrpc.Response) (bool, error) {
+	// This is a callback function to be called after confirmation timeout is expired.
+	// It is supposed to be used to confirm or cancel changes as per logic of the implementation.
+	// In this example we will just print out request and response to console and confirm changes - for the sake ot example that's replace sophisticated logic.
+	fmt.Println("Request:")
+	outHelper(req)
+	fmt.Println("Response:")
+	outHelper(resp)
+	return false, nil
 }

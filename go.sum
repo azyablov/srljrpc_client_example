@@ -4,4 +4,6 @@ github.com/azyablov/srljrpc v0.9.4 h1:5hDbNLhMeH/e9ZHJR4sP0skNv0mD2bYHE5qx3Zv8Gg
 github.com/azyablov/srljrpc v0.9.4/go.mod h1:MaQUclw6ATsw0KvDgQacQAqKoNuUNuqpCkD4nywcg1w=
 github.com/azyablov/srljrpc v0.9.5 h1:TJX7aAkLUF1m9g5jG0Ldb4Wgwoo9zXT1p1V8yg2J+nk=
 github.com/azyablov/srljrpc v0.9.5/go.mod h1:MaQUclw6ATsw0KvDgQacQAqKoNuUNuqpCkD4nywcg1w=
+github.com/azyablov/srljrpc v0.9.7 h1:cARfdZz2ebb8u/WG7ikOw5qQ4wGGarLlnLGtGcLGHH0=
+github.com/azyablov/srljrpc v0.9.7/go.mod h1:MaQUclw6ATsw0KvDgQacQAqKoNuUNuqpCkD4nywcg1w=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
